@@ -45,14 +45,15 @@
 #define LED_OFF					(GPIOA_BRR_REG) |= (1 << 4)
 
 #define BUTTON_GET_STATE		(GPIOA_IDR_REG) & (1 << 3) //GPIO IDR - input device register
+#define LED_GET_STATE			(GPIOA_ODR_REG) & (1 << 4)
 
 #define SAMPLE_COUNT			5
 
 typedef enum
 {
-	NONE = (uint8_t)0,
-	RISE = (uint8_t)1,
-	FALL = (uint8_t)2
+	NONE = 0,
+	RISE = 1,
+	FALL = 2
 }EDGE_TYPE;
 
 EDGE_TYPE edgeDetect(uint8_t pin_state, uint8_t samples);
