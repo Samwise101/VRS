@@ -46,4 +46,20 @@
 
 #define BUTTON_GET_STATE		(GPIOA_IDR_REG) & (1 << 3) //GPIO IDR - input device register
 
+#define SAMPLE_COUNT			5
+
+typedef enum
+{
+	NONE = (uint8_t)0,
+	RISE = (uint8_t)1,
+	FALL = (uint8_t)2
+}EDGE_TYPE;
+
+EDGE_TYPE edgeDetect(uint8_t pin_state, uint8_t samples);
+
+EDGE_TYPE edge = NONE;
+
+uint8_t count = 0;
+uint8_t previous_state = 1;
+
 #endif /* ASSIGNMENT_H_ */

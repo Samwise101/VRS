@@ -76,6 +76,17 @@ int main(void)
 
   while (1)
   {
+	  edge = edgeDetect(!(BUTTON_GET_STATE), SAMPLE_COUNT);
+
+	  if(edge == NONE)
+		  continue;
+	  else if(edge == FALL && ~((GPIOA_ODR_REG) & (1 << 3))){
+		  LED_ON;
+	  }
+	  else if(edge == FALL && ((GPIOA_ODR_REG) & (1 << 3))){
+		  LED_OFF;
+	  }
+/*
 	  if(!(BUTTON_GET_STATE))
 	  {
 		  // 0.25s delay
@@ -94,11 +105,28 @@ int main(void)
 		  LL_mDelay(1000);
 		  LED_OFF;
 	  }
+*/
   }
-
 }
 
 /* USER CODE BEGIN 4 */
+
+EDGE_TYPE edgeDetect(uint8_t pin_state, uint8_t samples)
+{
+	if(count >= samples && pin_state == 0 && previous_state == 0){
+		count = 0;
+		return FALL;
+	}
+	else if(pin_state == 0 && count < samples){
+		previous_state = 0;
+		count++;
+	}
+	else if(pin_state == 1 && previous_state == 0){
+		previous_state = 1;
+		count = 0;
+	}
+	return NONE;
+}
 
 /* USER CODE END 4 */
 

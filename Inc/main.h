@@ -55,9 +55,7 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN Private defines */
 #define LED_PIN_POS				4
-
 #define BUTTON_PIN_POS			3
-
 #define RCC_REG_GPIOA_POS		17
 
 /* USER CODE END Private defines */
