@@ -80,13 +80,14 @@ int main(void)
   {
 	  edge = edgeDetect(BUTTON_GET_STATE, SAMPLE_COUNT);
 
-
 	  if(edge == FALL){
 		  if(~LED_GET_STATE)
 			  LED_ON;
 		  else
 			  LED_OFF;
 	  }
+
+	  LL_mDelay(10);
 /*
 	  if(!(BUTTON_GET_STATE))
 	  {
