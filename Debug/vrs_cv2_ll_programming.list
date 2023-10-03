@@ -41,11 +41,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  18 .debug_line   00001cb5  00000000  00000000  00034aa5  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_str    0006aca1  00000000  00000000  0003675a  2**0
+ 19 .debug_str    0006aca5  00000000  00000000  0003675a  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .debug_frame  0000060c  00000000  00000000  000a13fc  2**2
+ 20 .debug_frame  0000060c  00000000  00000000  000a1400  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000052  00000000  00000000  000a1a08  2**0
+ 21 .debug_line_str 00000056  00000000  00000000  000a1a0c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -370,7 +370,6 @@ int main(void)
 
   while (1)
   {
-
 	  edge = edgeDetect(BUTTON_GET_STATE, SAMPLE_COUNT);
  800034e:	4b19      	ldr	r3, [pc, #100]	; (80003b4 <main+0xf8>)
  8000350:	681b      	ldr	r3, [r3, #0]
@@ -411,6 +410,7 @@ int main(void)
  8000392:	f043 0310 	orr.w	r3, r3, #16
  8000396:	6013      	str	r3, [r2, #0]
 	  }
+
 	  LL_mDelay(10);
  8000398:	200a      	movs	r0, #10
  800039a:	f7ff ff3d 	bl	8000218 <LL_mDelay>
