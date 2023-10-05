@@ -60,8 +60,8 @@ all: main-build
 main-build: zadanie3_palenik.elf secondary-outputs
 
 # Tool invocations
-zadanie3_palenik.elf zadanie3_palenik.map: $(OBJS) $(USER_OBJS) C:\Users\u\Documents\VRS_zadanie3\STM32F303K8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "zadanie3_palenik.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\u\Documents\VRS_zadanie3\STM32F303K8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="zadanie3_palenik.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+zadanie3_palenik.elf zadanie3_palenik.map: $(OBJS) $(USER_OBJS) C:\Users\u\Documents\VRS_predmet\cv2\VRS\STM32F303K8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "zadanie3_palenik.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\u\Documents\VRS_predmet\cv2\VRS\STM32F303K8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="zadanie3_palenik.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

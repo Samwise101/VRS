@@ -105,7 +105,7 @@ typedef enum {
 
 } EDGE_TYPE;
 
-EDGE_TYPE edgeDetect(uint8_t pin_state, uint8_t samples);
+EDGE_TYPE edgeDetect(uint8_t samples);
 
 /* USER CODE END Private defines */
 

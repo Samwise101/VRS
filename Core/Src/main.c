@@ -107,7 +107,7 @@ int main(void)
   {
     /* USER CODE END WHILE */
 
-	  if(toggle_led == 1){
+	  if(toggle_led){
 		  if(!(LED_GPIO_Port->ODR & (1 << LED_PIN_POS))){
 			  LED_GPIO_Port->BSRR |= (1 << LED_PIN_POS);
 			  toggle_led = 0;
@@ -129,8 +129,8 @@ int main(void)
 void EXTI3_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI3_IRQn 0 */
-	while(!toggle_led){
-		edge = edgeDetect(BUTTON_GET_STATE, SAMPLE_COUNT);
+	if(!toggle_led){
+		edge = edgeDetect(SAMPLE_COUNT);
 		if(edge == FALL){
 			toggle_led = 1;
 		}
@@ -184,19 +184,25 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-EDGE_TYPE edgeDetect(uint8_t pin_state, uint8_t samples)
+EDGE_TYPE edgeDetect(uint8_t samples)
 {
-	if(pin_state && !previous_state){
-		previous_state = 1;
-		count = 0;
-	}
-	else if(!pin_state && count < samples){
-		previous_state = 0;
-		count++;
-		if(count == samples){
+	while(count < samples){
+
+		uint8_t pin_state = BUTTON_GET_STATE;
+
+		if(pin_state && !previous_state){
+			previous_state = 1;
 			count = 0;
-			return FALL;
 		}
+		else if(!pin_state && count < samples){
+			previous_state = 0;
+			count++;
+			if(count == samples){
+				count = 0;
+				return FALL;
+			}
+		}
+		LL_mDelay(10);
 	}
 	return NONE;
 }
