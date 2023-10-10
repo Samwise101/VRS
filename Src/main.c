@@ -20,115 +20,121 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "assignment.h"
+#include "dma.h"
+#include "usart.h"
+#include "gpio.h"
+
+/* Private function prototypes -----------------------------------------------*/
+void SystemClock_Config(void);
+
+
+/* Function processing DMA Rx data. Counts how many capital and small letters are in sentence.
+ * Result is supposed to be stored in global variable of type "letter_count_" that is defined in "main.h"
+ *
+ * @param1 - received sign
+ */
+void proccesDmaData(uint8_t sign);
+
+
+/* Space for your global variables. */
+
+	// type your global variables here:
+
 
 int main(void)
 {
-  /*
-   *  DO NOT WRITE TO THE WHOLE REGISTER!!!
-   *  Write to the bits, that are meant for change.
-   */
-   
-  //Systick init
-  LL_Init1msTick(8000000);
-  LL_SYSTICK_SetClkSource(LL_SYSTICK_CLKSOURCE_HCLK);
-  LL_SetSystemCoreClock(8000000);	
+  /* MCU Configuration--------------------------------------------------------*/
 
-  /*
-   * TASK - configure MCU peripherals so that button state can be read and LED will blink.
-   * Button must be connected to the GPIO port A and its pin 3.
-   * LED must be connected to the GPIO port A and its pin 4.
-   *
-   * In header file "assignment.h" define macros for MCU registers access and LED blink application.
-   * Code in this file must use these macros for the peripherals setup.
-   * Code of the LED blink application is already given so just the macros used in the application must be defined.
-   */
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SYSCFG);
+  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_PWR);
+  NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
 
+  /* Configure the system clock */
+  SystemClock_Config();
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_DMA_Init();
+  MX_USART2_UART_Init();
 
-  /* Enable clock for GPIO port A*/
+  /* Space for your local variables, callback registration ...*/
 
-	//type your code for GPIOA clock enable here:
-    // str.148
-  (RCC_AHBENR_REG) |= (uint32_t)(1 << RCC_REG_GPIOA_POS);
-
-  /* GPIOA pin 3 and 4 setup */
-
-  //type your code for GPIOA pins setup here:
-  /*GPIO MODER register*/
-  //Set mode for pin 4 - LED str.237 - 0x3 = 11 v bin
-  (GPIOA_MODER_REG) &= ~(uint32_t)(0x3 << (LED_PIN_POS *2));
-  (GPIOA_MODER_REG) |= (uint32_t)(1 << (LED_PIN_POS *2));
-  //Set mode for pin 3
-  (GPIOA_MODER_REG) &= ~(uint32_t)(0x3 << (BUTTON_PIN_POS *2));
-
-  /*GPIO OTYPER register*/
-  (GPIOA_OTYPER_REG) &= ~(1 << LED_PIN_POS);
-
-  /*GPIO OSPEEDR register*/
-  //Set Low speed for GPIOA pin 4
-  (GPIOA_OSPEEDER_REG) &= ~(0x3 << (LED_PIN_POS *2));
-
-  /*GPIO PUPDR register, reset*/
-  //Set pull up for GPIOA pin 3 (input) (button)
-  (GPIOA_PUPDR_REG) |= (1 << (BUTTON_PIN_POS *2));
-  //Set no pull for GPIOA pin 4
-  (GPIOA_PUPDR_REG) &= ~(0x3 << (LED_PIN_POS *2));
+  	  //type your code here:
 
   while (1)
   {
-	  if(!(BUTTON_GET_STATE))
-	  {
-		  // 0.25s delay
-		  LL_mDelay(250);
-		  LED_ON;
-		  // 0.25s delay
-		  LL_mDelay(250);
-		  LED_OFF;
-	  }
-	  else
-	  {
-		  // 1s delay
-		  LL_mDelay(1000);
-		  LED_ON;
-		  // 1s delay
-		  LL_mDelay(1000);
-		  LED_OFF;
-	  }
-  }
+	  /* Periodic transmission of information about DMA Rx buffer state.
+	   * Transmission frequency - 0.5Hz.
+	   * Message format - "Buffer capacity: %d bytes, occupied memory: %d bytes, load [in %]: %f%"
+	   * Example message (what I wish to see in terminal) - Buffer capacity: 1000 bytes, occupied memory: 231 bytes, load [in %]: 23.1%
+	   */
 
+	  /* Valid text string information transmission.
+	   * Transmission frequency - when new valid string is received.
+	   * Message format - "Valid string: %s, lower-case: %d, upper-case: %d"
+	   * Example message (what I wish to see in terminal) - Valid string: Platn15uborZnakov, lower-case: 13, upper-case: 2
+	   */
+
+  	  	  	  //type your code here:
+  }
+  /* USER CODE END 3 */
 }
 
-/* USER CODE BEGIN 4 */
 
-/* USER CODE END 4 */
+void SystemClock_Config(void)
+{
+  LL_FLASH_SetLatency(LL_FLASH_LATENCY_0);
 
-/**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
+  if(LL_FLASH_GetLatency() != LL_FLASH_LATENCY_0)
+  {
+  Error_Handler();  
+  }
+  LL_RCC_HSI_Enable();
+
+   /* Wait till HSI is ready */
+  while(LL_RCC_HSI_IsReady() != 1)
+  {
+    
+  }
+  LL_RCC_HSI_SetCalibTrimming(16);
+  LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
+  LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_1);
+  LL_RCC_SetAPB2Prescaler(LL_RCC_APB1_DIV_1);
+  LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_HSI);
+
+   /* Wait till System clock is ready */
+  while(LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_HSI)
+  {
+  
+  }
+  LL_Init1msTick(8000000);
+  LL_SYSTICK_SetClkSource(LL_SYSTICK_CLKSOURCE_HCLK);
+  LL_SetSystemCoreClock(8000000);
+}
+
+/*
+ * Implementation of function processing data received via USART.
+ */
+void proccesDmaData(uint8_t sign)
+{
+	/* Process received data */
+
+		// type your algorithm here:
+}
+
+
 void Error_Handler(void)
 {
-  /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
 
-  /* USER CODE END Error_Handler_Debug */
 }
 
 #ifdef  USE_FULL_ASSERT
-/**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
+
 void assert_failed(char *file, uint32_t line)
 { 
-  /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
-     tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-  /* USER CODE END 6 */
+
 }
-#endif /* USE_FULL_ASSERT */
+
+#endif
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
