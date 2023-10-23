@@ -24,7 +24,6 @@
 #include "usart.h"
 #include "gpio.h"
 #include "string.h"
-#include <stdio.h>
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
@@ -39,14 +38,14 @@ void proccesDmaData(const uint8_t* data, uint8_t lenght);
 
 
 /* Space for your global variables. */
-
-	uint16_t upperCaseLetterNum = 0;
-	uint16_t lowerCaseLetterNum = 0;
+	uint8_t upperCaseLetterNum = 0;
+	uint8_t lowerCaseLetterNum = 0;
 	uint8_t correctString = 0;
 	uint8_t startWaitForEndChar = 0;
 	uint8_t count = 0;
 	uint8_t parsingPos = 0;
 	uint8_t dataToParse[35];
+	uint8_t buffPos = 0;
 
 int main(void)
 {
@@ -78,11 +77,7 @@ int main(void)
 	   * Example message (what I wish to see in terminal) - Buffer capacity: 1000 bytes, occupied memory: 231 bytes, load [in %]: 23.1%
 	   */
 	  memset(transmitionBuffer, 0, DMA_USART2_BUFFER_SIZE);
-	  snprintf(transmitionBuffer,
-			  sizeof(transmitionBuffer),
-			  "Buffer capacity: %d bytes, occupied memory: %d bytes, load [in %]: %.1f%\n\r",
-			  DMA_USART2_BUFFER_SIZE,DMA_USART2_BUFFER_SIZE - LL_DMA_GetDataLength(DMA1, LL_DMA_CHANNEL_6),
-			  ((DMA_USART2_BUFFER_SIZE - LL_DMA_GetDataLength(DMA1, LL_DMA_CHANNEL_6))*100)/DMA_USART2_BUFFER_SIZE);
+	  snprintf(transmitionBuffer,DMA_USART2_BUFFER_SIZE,"Buffer capacity: %d bytes, occupied memory: %d bytes, load [in %]: %.1f%%\n\r", DMA_USART2_BUFFER_SIZE,DMA_USART2_BUFFER_SIZE - LL_DMA_GetDataLength(DMA1, LL_DMA_CHANNEL_6),((DMA_USART2_BUFFER_SIZE - LL_DMA_GetDataLength(DMA1, LL_DMA_CHANNEL_6))*100.0)/sizeof(transmitionBuffer));
 
 	  /* Valid text string information transmission.
 	   * Transmission frequency - when new valid string is received.
@@ -145,12 +140,20 @@ void SystemClock_Config(void)
  */
 void proccesDmaData(const uint8_t* data, uint8_t lenght)
 {
-	if(data[0] == '#' && !startWaitForEndChar && !correctString){
+	buffPos = 0;
+
+	if(!startWaitForEndChar && !correctString){
 		count = 0;
-		startWaitForEndChar = 1;
+		for(int i = 0; i < lenght; i++){
+			if(data[i] == '#'){
+				startWaitForEndChar = 1;
+				buffPos = i+1;
+				break;
+			}
+		}
 	}
 	if(startWaitForEndChar && !correctString){
-		for(uint8_t i=0; i < lenght; i++){
+		for(uint8_t i=buffPos; i < lenght; i++){
 			if(data[i] != '$' && count < sizeof(dataToParse)){
 				dataToParse[count] = data[i];
 				count++;
@@ -158,7 +161,6 @@ void proccesDmaData(const uint8_t* data, uint8_t lenght)
 			else if(data[i] == '$' && count < sizeof(dataToParse)){
 				correctString = 1;
 				startWaitForEndChar = 0;
-				dataToParse[count] = data[i];
 				break;
 			}
 			else if(data[i] != '$' && count >= sizeof(dataToParse)){

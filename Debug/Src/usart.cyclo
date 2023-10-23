@@ -30,4 +30,4 @@
 ../Src/usart.c:30:6:USART2_RegisterCallback	2
 ../Src/usart.c:44:6:MX_USART2_UART_Init	1
 ../Src/usart.c:132:6:USART2_PutBuffer	1
-../Src/usart.c:150:6:USART2_CheckDmaReception	5
+../Src/usart.c:150:6:USART2_CheckDmaReception	4
